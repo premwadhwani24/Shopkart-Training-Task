@@ -13,7 +13,7 @@ import java.util.List;
 @RequestMapping("/api/products")
 public class ProductController {
 
-	private ProductService productService;
+	private final ProductService productService;
 
 	@Autowired // dependency injection
 	public ProductController(ProductService productService) {
