@@ -2,6 +2,9 @@ package io.github.dbc2201.spring.boot.demos.shopkart.product;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,6 +15,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/products")
+@Validated
 public class ProductController {
 
 	private final ProductService productService;
@@ -29,8 +33,9 @@ public class ProductController {
 	 * @return The newly created product
 	 */
 	@PostMapping
-	public Product createProduct(@RequestBody Product product) {
-		return productService.createProduct(product);
+	public ResponseEntity<Product> createProduct(@RequestBody Product product) {
+		Product savedProduct=productService.createProduct(product);
+		return new  ResponseEntity<>(savedProduct, HttpStatus.CREATED);
 	}
 
 	/**
@@ -39,8 +44,10 @@ public class ProductController {
 	 * @return List of all products
 	 */
 	@GetMapping
-	public List<Product> getAllProducts() {
-		return productService.getAllProducts();
+	public ResponseEntity<List<Product> >
+	getAllProducts() {
+		List<Product> products=productService.getAllProducts();
+		return ResponseEntity.ok(products);
 	}
 
 	/**
@@ -50,8 +57,12 @@ public class ProductController {
 	 * @return The found product
 	 */
 	@GetMapping("/{id}")
-	public Product getProductById(@PathVariable long id) {
-		return productService.getProductById(id);
+	public ResponseEntity<Product> getProductById(@PathVariable long id) {
+		Product product = productService.getProductById(id);
+		if (product == null) {
+			return ResponseEntity.ok(product);
+		}
+		return ResponseEntity.notFound().build();
 	}
 
 	/**
@@ -61,8 +72,12 @@ public class ProductController {
 	 * @return The found product
 	 */
 	@GetMapping("/byName")
-	public Product getProductByName(@RequestParam String name) {
-		return productService.getProductByName(name);
+	public ResponseEntity<Product> getProductByName(@RequestParam String name) {
+		Product product = productService.getProductByName(name);
+		if (product == null) {
+			return ResponseEntity.ok(product);
+		}
+		return ResponseEntity.notFound().build();
 	}
 
 	/**
@@ -73,8 +88,12 @@ public class ProductController {
 	 * @return The updated product
 	 */
 	@PutMapping("/{id}/price")
-	public Product updateProductPrice(@PathVariable long id, @RequestParam double price) {
-		return productService.updateProductPrice(id, price);
+	public ResponseEntity<Product> updateProductPrice(@PathVariable long id, @RequestParam double price) {
+		Product product = productService.updateProductPrice(id,price);
+		if(product != null) {
+			return ResponseEntity.ok(product);
+		}
+		return ResponseEntity.notFound().build();
 	}
 
 	/**
@@ -85,8 +104,12 @@ public class ProductController {
 	 * @return The updated product
 	 */
 	@PutMapping("/{id}/name")
-	public Product updateProductName(@PathVariable long id, @RequestParam String name) {
-		return productService.updateProductName(id, name);
+	public ResponseEntity<Product> updateProductName(@PathVariable long id, @RequestParam String name) {
+		Product product = productService.updateProductName(id,name);
+		if(product != null) {
+			return ResponseEntity.ok(product);
+		}
+		return ResponseEntity.notFound().build();
 	}
 
 	/**
@@ -97,8 +120,12 @@ public class ProductController {
 	 * @return The updated product
 	 */
 	@PutMapping("/{id}/description")
-	public Product updateProductDescription(@PathVariable long id, @RequestParam String description) {
-		return productService.updateProductDescription(id, description);
+	public ResponseEntity<Product> updateProductDescription(@PathVariable long id, @RequestParam String description) {
+		Product product = productService.updateProductDescription(id, description);
+		if(product != null) {
+			return ResponseEntity.ok(product);
+		}
+		return ResponseEntity.notFound().build();
 	}
 
 	/**
@@ -109,8 +136,12 @@ public class ProductController {
 	 * @return The updated product
 	 */
 	@PutMapping("/{id}/imageUrl")
-	public Product updateProductImageUrl(@PathVariable long id, @RequestParam String imageUrl) {
-		return productService.updateProductImageUrl(id, imageUrl);
+	public ResponseEntity<Product> updateProductImageUrl(@PathVariable long id, @RequestParam String imageUrl) {
+		Product product = productService.updateProductImageUrl(id,imageUrl);
+		if(product==null) {
+			return ResponseEntity.ok(product);
+		}
+		return ResponseEntity.notFound().build();
 	}
 
 	/**
@@ -120,12 +151,11 @@ public class ProductController {
 	 * @return A message indicating success or failure
 	 */
 	@DeleteMapping("/{id}")
-	public String deleteProduct(@PathVariable long id) {
+	public ResponseEntity<String> deleteProduct(@PathVariable long id) {
 		boolean deleted = productService.deleteProduct(id);
 		if (deleted) {
-			return "Product deleted successfully";
-		} else {
-			return "Product not found";
+			return ResponseEntity.ok("Product deleted successfully");
+		}
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
 		}
 	}
-}
