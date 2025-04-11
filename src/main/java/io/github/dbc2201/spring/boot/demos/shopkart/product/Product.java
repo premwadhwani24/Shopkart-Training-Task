@@ -1,19 +1,31 @@
 package io.github.dbc2201.spring.boot.demos.shopkart.product;
 
-import java.util.Objects;
+import jakarta.persistence.*;
 
+import java.util.Objects;
+@Entity
+@Table(name="products")
 public class Product {
-	private long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long id;//Primary Key is ID
+
+	@Column(nullable = false)
 	private String name;
+
+	@Column(nullable = false)
 	private String description;
+
+	@Column(nullable = false)
 	private double price;
+
+	@Column(nullable = false)
 	private String imageUrl;
 
 	public Product() {
 	}
 
-	public Product(long id, String name, String description, double price, String imageUrl) {
-		this.id = id;
+	public Product(String name, String description, double price, String imageUrl) {
 		this.name = name;
 		this.description = description;
 		this.price = price;
@@ -21,6 +33,7 @@ public class Product {
 	}
 
 	public long getId() {
+
 		return id;
 	}
 
